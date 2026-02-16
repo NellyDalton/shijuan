@@ -6,102 +6,8 @@
     <title>全班作业扫描王</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <style>
-        body { margin: 0; background: #000; color: #fff; font-family: -apple-system, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
-        
-        /* 顶部栏：显示状态 + 导出按钮 */
-        .header { 
-            height: 54px; background: rgba(20,20,20,0.95); border-bottom: 1px solid #333;
-            display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 20;
-        }
-        .stats { font-size: 12px; color: #aaa; line-height: 1.3; }
-        .stats b { color: #fff; font-size: 14px; margin-right: 2px; }
-        
-        /* 导出按钮 */
-        .btn-export {
-            background: #10b981; color: white; border: none; padding: 6px 14px; 
-            border-radius: 20px; font-weight: bold; font-size: 13px;
-            box-shadow: 0 2px 8px rgba(16,185,129,0.3);
-            display: flex; align-items: center; gap: 4px; transition: 0.2s;
-        }
-        .btn-export:active { transform: scale(0.95); opacity: 0.9; }
-        .btn-export:disabled { background: #333; color: #666; box-shadow: none; }
+      <link rel="stylesheet" href="assets/scanner/styles.css">
 
-        /* 摄像头区域 */
-        #cam-container { flex: 1; position: relative; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* 浮动提示：当前正在拍谁 */
-        .current-hud {
-            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-            background: rgba(56, 189, 248, 0.25); border: 1px solid rgba(56, 189, 248, 0.4);
-            backdrop-filter: blur(4px); color: #e0f2fe; 
-            padding: 6px 16px; border-radius: 20px;
-            font-size: 14px; font-weight: bold; pointer-events: none; z-index: 10;
-        }
-
-        /* 底部控制区 */
-        .controls { 
-            height: 160px; background: #080808; border-top: 1px solid #222;
-            display: grid; grid-template-columns: 1fr auto 1fr; 
-            align-items: center; padding: 0 20px; gap: 10px;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        /* 按钮通用 */
-        button { outline: none; -webkit-tap-highlight-color: transparent; }
-        
-        /* 拍照大按钮 */
-        .shutter-ring {
-            width: 72px; height: 72px; border-radius: 50%; border: 3px solid #fff;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto;
-        }
-        .shutter-inner {
-            width: 60px; height: 60px; background: #fff; border-radius: 50%;
-            transition: transform 0.1s;
-        }
-        .shutter-inner:active { transform: scale(0.9); background: #ccc; }
-
-        /* 侧边功能键 */
-        .side-btn {
-            background: transparent; border: none; color: #fff; 
-            display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px;
-        }
-        .icon-circle {
-            width: 46px; height: 46px; border-radius: 50%; background: #222;
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-            transition: background 0.2s;
-        }
-        .side-btn:active .icon-circle { background: #333; }
-        
-        /* 下一位按钮高亮 */
-        .btn-next .icon-circle { background: #2563eb; color: #fff; }
-        .btn-next:active .icon-circle { background: #1d4ed8; }
-
-        /* 预览缩略图 */
-        .preview-box {
-            position: absolute; bottom: 20px; right: 20px; 
-            width: 64px; height: 86px; background: #222; border: 2px solid #fff; 
-            border-radius: 6px; overflow: hidden; display: none; z-index: 15;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
-        .page-badge { 
-            position: absolute; bottom: 0; left:0; width: 100%; 
-            background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; 
-            text-align: center; padding: 2px 0; 
-        }
-
-        .flash { position: absolute; inset: 0; background: white; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 30; }
-
-        /* 加载遮罩 */
-        #loading {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000;
-            display: none; align-items: center; justify-content: center; flex-direction: column;
-        }
-        .spinner { width: 36px; height: 36px; border: 4px solid #333; border-top: 4px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-    </style>
 </head>
 <body>
 
@@ -110,7 +16,7 @@
         已存库: <b id="totalSaved">0</b> 人<br>
         <span style="opacity:0.6">内存占用 ≈ <span id="memUsage">0</span> MB</span>
     </div>
-    <button class="btn-export" id="btnExport" onclick="exportAll()" disabled>
+    <button class="btn-export" id="btnExport" disabled>
         <span>📦 打包全班</span>
     </button>
 </div>
@@ -126,16 +32,16 @@
 </div>
 
 <div class="controls">
-    <button class="side-btn" onclick="undoLast()">
+    <button class="side-btn" id="btnUndoLast">
         <div class="icon-circle">↺</div>
         <span>撤销本页</span>
     </button>
 
-    <div class="shutter-ring" onclick="snap()">
+    <div class="shutter-ring" id="btnSnap">
         <div class="shutter-inner"></div>
     </div>
 
-    <button class="side-btn btn-next" onclick="nextStudent()">
+    <button class="side-btn btn-next" id="btnNextStudent">
         <div class="icon-circle">➜</div>
         <span>完成此人<br>下一位</span>
     </button>
@@ -149,183 +55,6 @@
 
 <canvas id="canvas" style="display:none"></canvas>
 
-<script>
-    // === 核心数据 ===
-    // 存储结构: { "1": [blob1, blob2], "2": [blob1], ... }
-    let allData = {}; 
-    let studentId = 1;
-    let currentBatch = []; // 当前正在拍的这个学生的照片
-
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
-    // 1. 初始化相机
-    async function init() {
-        try {
-            // 优先尝试高清后置
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1440 } } 
-            });
-            video.srcObject = stream;
-        } catch (e) {
-            alert("无法启动相机。请使用 Safari (iOS) 或 Chrome (Android)，并确保网址是 HTTPS 或 file://");
-        }
-    }
-    init();
-
-    // 2. 拍照 (自动压缩防止内存溢出)
-    function snap() {
-        if (!video.videoWidth) return;
-        
-        // 闪光动画
-        const f = document.getElementById('flash');
-        f.style.opacity = 0.8; setTimeout(()=>f.style.opacity=0, 150);
-
-        // 限制尺寸：最大边长 1600px (约 200万像素)，既清晰又省内存
-        const maxSide = 1600;
-        let w = video.videoWidth;
-        let h = video.videoHeight;
-        if (w > maxSide || h > maxSide) {
-            const r = Math.min(maxSide/w, maxSide/h);
-            w *= r; h *= r;
-        }
-
-        canvas.width = w;
-        canvas.height = h;
-        
-        // 简单增强
-        ctx.filter = "contrast(1.1) brightness(1.05)";
-        ctx.drawImage(video, 0, 0, w, h);
-
-        // 存为 Blob (0.8质量)
-        canvas.toBlob(blob => {
-            currentBatch.push(blob);
-            updateUI();
-        }, 'image/jpeg', 0.8);
-    }
-
-    // 3. 撤销上一页
-    function undoLast() {
-        if (currentBatch.length === 0) return;
-        currentBatch.pop();
-        updateUI();
-    }
-
-    // 4. 下一位 (存入内存，不下载)
-    function nextStudent() {
-        if (currentBatch.length === 0) {
-            // 误触保护
-            if(!confirm("当前学生还没拍照，确定要跳过吗？")) return;
-        }
-
-        // 保存到大对象
-        if(currentBatch.length > 0) {
-            allData[studentId] = [...currentBatch];
-        }
-        
-        // 简单的成功反馈
-        const hud = document.querySelector('.current-hud');
-        const oldText = hud.innerHTML;
-        hud.innerHTML = `✅ 学生 ${studentId} 已保存`;
-        hud.style.background = "rgba(16, 185, 129, 0.6)";
-        
-        setTimeout(() => {
-            studentId++;
-            currentBatch = [];
-            hud.innerHTML = `当前: 学生 <span id="currId" style="font-size:1.3em; color:#fff">${studentId}</span> (第 <span id="currPage">0</span> 页)`;
-            hud.style.background = ""; // 恢复样式
-            updateUI();
-        }, 500);
-    }
-
-    // 5. 最终导出
-    function exportAll() {
-        // 检查：如果当前学生拍了一半没点“下一位”，询问是否包含
-        if (currentBatch.length > 0) {
-            if(confirm(`检测到“学生 ${studentId}”还有照片未归档，要一起打包吗？`)) {
-                allData[studentId] = [...currentBatch];
-            } else {
-                return; // 用户取消
-            }
-        }
-
-        const ids = Object.keys(allData);
-        if (ids.length === 0) return alert("还没有任何数据！");
-
-        // 显示加载层
-        document.getElementById('loading').style.display = 'flex';
-
-        const zip = new JSZip();
-        
-        // 遍历打包
-        ids.forEach(sid => {
-            const pages = allData[sid];
-            pages.forEach((blob, idx) => {
-                // 自动命名：1.1.jpg, 1.2.jpg (改卷端能自动识别)
-                zip.file(`${sid}.${idx + 1}.jpg`, blob);
-            });
-        });
-
-        // 生成文件
-        zip.generateAsync({type:"blob"}).then(content => {
-            document.getElementById('loading').style.display = 'none';
-            
-            const date = new Date();
-            const timeStr = `${date.getHours()}点${date.getMinutes()}分`;
-            saveAs(content, `全班作业_${ids.length}人_${timeStr}.zip`);
-            
-            // 导出成功后提示
-            if(confirm("✅ 导出成功！\n\n是否清空所有已拍数据，准备扫描新的班级？")) {
-                location.reload();
-            }
-        });
-    }
-
-    // UI更新
-    function updateUI() {
-        // 更新顶部统计
-        const savedCount = Object.keys(allData).length;
-        document.getElementById('totalSaved').innerText = savedCount;
-        
-        // 估算内存: 假设每张图 0.4MB
-        let totalPages = currentBatch.length;
-        Object.values(allData).forEach(arr => totalPages += arr.length);
-        const mem = (totalPages * 0.4).toFixed(1);
-        document.getElementById('memUsage').innerText = mem;
-        
-        // 内存警告 (超过300MB变红)
-        const stats = document.querySelector('.stats');
-        if (mem > 300) stats.style.color = "#fb7185";
-        else stats.style.color = "#aaa";
-
-        // 启用导出按钮
-        document.getElementById('btnExport').disabled = (savedCount === 0 && currentBatch.length === 0);
-
-        // 更新中间HUD
-        const cId = document.getElementById('currId');
-        if(cId) cId.innerText = studentId;
-        const cPg = document.getElementById('currPage');
-        if(cPg) cPg.innerText = currentBatch.length;
-
-        // 更新预览图
-        const box = document.getElementById('previewBox');
-        if (currentBatch.length > 0) {
-            box.style.display = 'block';
-            const lastBlob = currentBatch[currentBatch.length-1];
-            document.getElementById('previewImg').src = URL.createObjectURL(lastBlob);
-            document.getElementById('previewBadge').innerText = `${currentBatch.length}页`;
-        } else {
-            box.style.display = 'none';
-        }
-    }
-
-    // 防误触刷新
-    window.onbeforeunload = function() {
-        if (Object.keys(allData).length > 0 || currentBatch.length > 0) {
-            return "数据未导出，确定要刷新吗？";
-        }
-    };
-</script>
+<script src="assets/scanner/app.js"></script>
 </body>
 </html>
